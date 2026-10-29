@@ -9,6 +9,7 @@ MagneticWidget::MagneticWidget(QWidget *adsorbWidget, AdsorbPositions adsorbPos)
     Q_ASSERT(m_adsorbWidget);
     setParent(m_adsorbWidget);
     setWindowFlags(windowFlags() | Qt::Tool);
+    m_adsorbWidgetSize = m_adsorbWidget->size();
 
     m_adsorbWidget->installEventFilter(this);
 }
@@ -30,6 +31,10 @@ bool MagneticWidget::eventFilter(QObject *watched, QEvent *event)
     if (watched != m_adsorbWidget || !event) {
         return false;
     }
+    // 始终记录adsorbWidget最新size
+    if (QEvent::Resize == event->type()) {
+        m_adsorbWidgetSize = m_adsorbWidget->size();
+    }
     if (m_adsorbed && QEvent::Move == event->type()) {
         move(m_adsorbWidget->pos() - m_relativePos);
     }
@@ -48,7 +53,7 @@ bool MagneticWidget::eventFilter(QObject *watched, QEvent *event)
             pos.setY(pos.y() - m_relativePos.y());
             break;
         case AP_OUTSIDE_RIGHT:
-            pos.setX(parentRect.right() + 1);
+            pos.setX(pos.x() + m_adsorbWidgetSize.width());
             pos.setY(pos.y() - m_relativePos.y());
             break;
         case AP_OUTSIDE_TOP:
@@ -164,9 +169,9 @@ void MagneticWidget::moveEvent(QMoveEvent *event)
 
 void MagneticWidget::getGeometry(QRect &relativeWidgetRect, QRect &targetWidgetRect)
 {
-    // 使用 frameGeometry（含标题栏与边框）作为吸附基准，
-    // 保证外侧吸附完全贴合窗口外缘，不会压住客户区（镜像画面）边缘
-    relativeWidgetRect = m_adsorbWidget->frameGeometry();
+    relativeWidgetRect.setTopLeft(m_adsorbWidget->pos());
+    relativeWidgetRect.setWidth(m_adsorbWidgetSize.width());
+    relativeWidgetRect.setHeight(m_adsorbWidgetSize.height());
 
     targetWidgetRect.setTopLeft(pos());
     targetWidgetRect.setWidth(width());
