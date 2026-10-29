@@ -254,10 +254,12 @@ void VideoForm::setSerial(const QString &serial)
 void VideoForm::showToolForm(bool show)
 {
     if (!m_toolForm) {
-        m_toolForm = new ToolForm(this, ToolForm::AP_OUTSIDE_RIGHT);
+        // 吸附在窗口内部右缘，避免工具栏悬浮在窗口外遮挡屏幕
+        m_toolForm = new ToolForm(this, ToolForm::AP_INSIDE_RIGHT);
         m_toolForm->setSerial(m_serial);
     }
-    m_toolForm->move(pos().x() + geometry().width(), pos().y() + 30);
+    m_toolForm->adjustSize();
+    m_toolForm->move(pos().x() + geometry().width() - m_toolForm->width(), pos().y() + 30);
     m_toolForm->setVisible(show);
 }
 
@@ -518,6 +520,16 @@ void VideoForm::installShortcut()
             return;
         }
         emit device->clipboardPaste();
+    });
+
+    // screenshot（adb 原生分辨率截图，复制到剪贴板并保存）
+    shortcut = new QShortcut(QKeySequence("Alt+S"), this);
+    shortcut->setAutoRepeat(false);
+    connect(shortcut, &QShortcut::activated, this, [this]() {
+        auto device = qsc::IDeviceManage::getInstance().getDevice(m_serial);
+        if (device) {
+            device->screenshot();
+        }
     });
 }
 
