@@ -254,12 +254,12 @@ void VideoForm::setSerial(const QString &serial)
 void VideoForm::showToolForm(bool show)
 {
     if (!m_toolForm) {
-        // 吸附在窗口内部右缘，避免工具栏悬浮在窗口外遮挡屏幕
-        m_toolForm = new ToolForm(this, ToolForm::AP_INSIDE_RIGHT);
+        // 吸附在窗口外右侧：以 frameGeometry（含边框）外缘为基准，
+        // 完全不遮挡镜像画面，同时避免压住客户区边缘
+        m_toolForm = new ToolForm(this, ToolForm::AP_OUTSIDE_RIGHT);
         m_toolForm->setSerial(m_serial);
     }
-    m_toolForm->adjustSize();
-    m_toolForm->move(pos().x() + geometry().width() - m_toolForm->width(), pos().y() + 30);
+    m_toolForm->move(frameGeometry().right() + 1, pos().y() + 30);
     m_toolForm->setVisible(show);
 }
 
