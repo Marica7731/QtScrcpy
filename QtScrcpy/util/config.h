@@ -33,6 +33,9 @@ struct UserBootConfig
     int cameraFacing      = 0;  // 0=back, 1=front
     bool advancedDisplay = false;
     int displayMode = 0;
+    int shotMaxSizeIndex = 0; // 截图长边限制下拉索引：0=原图，其余为限制像素值
+    int shotFormatIndex = 0;  // 截图格式：0=PNG（无损），1=JPEG
+    int shotQuality = 90;     // JPEG 质量 1-100
     QString displayId;
     QString newDisplay;
     QString crop;

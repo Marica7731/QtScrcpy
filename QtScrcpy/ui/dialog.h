@@ -107,6 +107,7 @@ private:
     void saveIpHistory(const QString &ip);
     void loadPortHistory();
     void savePortHistory(const QString &port);
+    void applyScreenshotOptions();
 
     void showPortEditMenu(const QPoint &pos);
     void syncPresetLevelToUi();

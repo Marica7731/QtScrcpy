@@ -111,6 +111,15 @@
 #define COMMON_PRESET_LEVEL_KEY "PresetLevel"
 #define COMMON_PRESET_LEVEL_DEF 1
 
+#define COMMON_SHOT_MAX_SIZE_INDEX_KEY "ShotMaxSizeIndex"
+#define COMMON_SHOT_MAX_SIZE_INDEX_DEF 0
+
+#define COMMON_SHOT_FORMAT_INDEX_KEY "ShotFormatIndex"
+#define COMMON_SHOT_FORMAT_INDEX_DEF 0
+
+#define COMMON_SHOT_QUALITY_KEY "ShotQuality"
+#define COMMON_SHOT_QUALITY_DEF 90
+
 #define COMMON_VIDEO_SOURCE_KEY "VideoSource"
 #define COMMON_VIDEO_SOURCE_DEF 0
 
@@ -239,6 +248,9 @@ void Config::setUserBootConfig(const UserBootConfig &config)
     m_userData->setValue(COMMON_DECODE_MODE_KEY, config.decodeMode);
     m_userData->setValue(COMMON_CODEC_MODE_INDEX_KEY, config.codecModeIndex);
     m_userData->setValue(COMMON_PRESET_LEVEL_KEY, config.presetLevel);
+    m_userData->setValue(COMMON_SHOT_MAX_SIZE_INDEX_KEY, config.shotMaxSizeIndex);
+    m_userData->setValue(COMMON_SHOT_FORMAT_INDEX_KEY, config.shotFormatIndex);
+    m_userData->setValue(COMMON_SHOT_QUALITY_KEY, config.shotQuality);
     m_userData->setValue(COMMON_VIDEO_SOURCE_KEY, config.videoSource);
     m_userData->setValue(COMMON_CAMERA_FACING_KEY, config.cameraFacing);
     m_userData->setValue("AdvancedDisplay", config.advancedDisplay);
@@ -285,6 +297,9 @@ UserBootConfig Config::getUserBootConfig()
     if (config.presetLevel < 0) {
         config.presetLevel = m_userData->value("MtkLevel", COMMON_PRESET_LEVEL_DEF).toInt();
     }
+    config.shotMaxSizeIndex = m_userData->value(COMMON_SHOT_MAX_SIZE_INDEX_KEY, COMMON_SHOT_MAX_SIZE_INDEX_DEF).toInt();
+    config.shotFormatIndex = m_userData->value(COMMON_SHOT_FORMAT_INDEX_KEY, COMMON_SHOT_FORMAT_INDEX_DEF).toInt();
+    config.shotQuality = m_userData->value(COMMON_SHOT_QUALITY_KEY, COMMON_SHOT_QUALITY_DEF).toInt();
     config.videoSource = m_userData->value(COMMON_VIDEO_SOURCE_KEY, COMMON_VIDEO_SOURCE_DEF).toInt();
     config.cameraFacing = m_userData->value(COMMON_CAMERA_FACING_KEY, COMMON_CAMERA_FACING_DEF).toInt();
     config.advancedDisplay = m_userData->value("AdvancedDisplay", false).toBool();

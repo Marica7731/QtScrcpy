@@ -34,6 +34,7 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "videoform.h"
+#include "screenshotoptions.h"
 #include "../groupcontroller/groupcontroller.h"
 
 #ifdef Q_OS_WIN32
@@ -107,6 +108,12 @@ Dialog::Dialog(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     initUI();
 
     updateBootConfig(true);
+
+    // 截图选项：恢复配置后立即应用到 qsc 全局，变更时即时保存
+    applyScreenshotOptions();
+    connect(ui->shotSizeBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int) { applyScreenshotOptions(); });
+    connect(ui->shotFormatBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int) { applyScreenshotOptions(); });
+    connect(ui->shotQualitySpin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int) { applyScreenshotOptions(); });
 
     // Intel Mac 上如果配置文件遗留 decodeMode=1，强制重置为 0
     // （VideoToolbox 选项在 initUI() 中已被移除）
@@ -253,6 +260,15 @@ void Dialog::initUI()
     ui->maxSizeBox->addItem("1280");
     ui->maxSizeBox->addItem("1920");
     ui->maxSizeBox->addItem(tr("original"));
+
+    // screenshot options
+    ui->shotSizeBox->addItem(tr("original"));
+    ui->shotSizeBox->addItem("1080");
+    ui->shotSizeBox->addItem("1920");
+    ui->shotSizeBox->addItem("2560");
+    ui->shotFormatBox->addItem("PNG");
+    ui->shotFormatBox->addItem("JPEG");
+    ui->shotQualitySpin->setEnabled(false);
 
     ui->videoSourceBox->addItem(tr("display"));
     ui->videoSourceBox->addItem(tr("camera"));
@@ -607,6 +623,9 @@ void Dialog::updateBootConfig(bool toView)
         ui->maxSizeBox->setCurrentIndex(config.maxSizeIndex);
         ui->formatBox->setCurrentIndex(config.recordFormatIndex);
         ui->recordPathEdt->setText(config.recordPath);
+        ui->shotSizeBox->setCurrentIndex(qBound(0, config.shotMaxSizeIndex, ui->shotSizeBox->count() - 1));
+        ui->shotFormatBox->setCurrentIndex(qBound(0, config.shotFormatIndex, ui->shotFormatBox->count() - 1));
+        ui->shotQualitySpin->setValue(qBound(ui->shotQualitySpin->minimum(), config.shotQuality, ui->shotQualitySpin->maximum()));
         ui->lockOrientationBox->setCurrentIndex(config.lockOrientationIndex);
         ui->framelessCheck->setChecked(config.framelessWindow);
         ui->recordScreenCheck->setChecked(config.recordScreen);
@@ -651,6 +670,9 @@ void Dialog::updateBootConfig(bool toView)
         config.maxSizeIndex = ui->maxSizeBox->currentIndex();
         config.recordFormatIndex = ui->formatBox->currentIndex();
         config.recordPath = ui->recordPathEdt->text();
+        config.shotMaxSizeIndex = ui->shotSizeBox->currentIndex();
+        config.shotFormatIndex = ui->shotFormatBox->currentIndex();
+        config.shotQuality = ui->shotQualitySpin->value();
         config.lockOrientationIndex = ui->lockOrientationBox->currentIndex();
         config.recordScreen = ui->recordScreenCheck->isChecked();
         config.recordBackground = ui->notDisplayCheck->isChecked();
@@ -699,6 +721,27 @@ void Dialog::updateBootConfig(bool toView)
 
         Config::getInstance().setUserBootConfig(config);
     }
+}
+
+void Dialog::applyScreenshotOptions()
+{
+    qsc::ScreenshotOptions options;
+
+    // "original" 及非数字项均表示保持原生分辨率
+    bool ok = false;
+    const int maxSide = ui->shotSizeBox->currentText().trimmed().toInt(&ok);
+    options.maxSide = (ok && maxSide > 0) ? maxSide : 0;
+    options.format = (ui->shotFormatBox->currentIndex() == 1) ? "jpg" : "png";
+    options.quality = ui->shotQualitySpin->value();
+    ui->shotQualitySpin->setEnabled(ui->shotFormatBox->currentIndex() == 1);
+    qsc::setScreenshotOptions(options);
+
+    // 即时持久化截图设置（不改动其他配置项）
+    UserBootConfig config = Config::getInstance().getUserBootConfig();
+    config.shotMaxSizeIndex = ui->shotSizeBox->currentIndex();
+    config.shotFormatIndex = ui->shotFormatBox->currentIndex();
+    config.shotQuality = ui->shotQualitySpin->value();
+    Config::getInstance().setUserBootConfig(config);
 }
 
 void Dialog::execAdbCmd()
