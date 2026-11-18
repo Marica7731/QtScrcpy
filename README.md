@@ -353,3 +353,5 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/QtScrcpy/organization/7/website"><img src="https://opencollective.com/QtScrcpy/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/QtScrcpy/organization/8/website"><img src="https://opencollective.com/QtScrcpy/organization/8/avatar.svg"></a>
 <a href="https://opencollective.com/QtScrcpy/organization/9/website"><img src="https://opencollective.com/QtScrcpy/organization/9/avatar.svg"></a>
+
+The mirror-window screenshot shortcut defaults to Ctrl+Shift+4. Record a new shortcut in the screenshot settings to apply it immediately and save it for subsequent launches.

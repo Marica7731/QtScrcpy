@@ -113,6 +113,10 @@ Dialog::Dialog(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     applyScreenshotOptions();
     connect(ui->shotSizeBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int) { applyScreenshotOptions(); });
     connect(ui->shotFormatBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int) { applyScreenshotOptions(); });
+    ui->shotShortcutEdit->setKeySequence(QKeySequence::fromString(Config::getInstance().screenshotShortcut(), QKeySequence::PortableText));
+    connect(ui->shotShortcutEdit, &QKeySequenceEdit::editingFinished, this, [this]() {
+        Config::getInstance().setScreenshotShortcut(ui->shotShortcutEdit->keySequence().toString(QKeySequence::PortableText));
+    });
     connect(ui->shotQualitySpin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int) { applyScreenshotOptions(); });
 
     // Intel Mac 上如果配置文件遗留 decodeMode=1，强制重置为 0

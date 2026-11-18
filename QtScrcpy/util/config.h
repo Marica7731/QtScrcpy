@@ -73,6 +73,8 @@ public:
     QStringList getConnectedGroups();
 
     // user data:common
+    QString screenshotShortcut() const;
+    void setScreenshotShortcut(const QString &shortcut);
     void setUserBootConfig(const UserBootConfig &config);
     UserBootConfig getUserBootConfig();
     void setTrayMessageShown(bool shown);
@@ -95,6 +97,9 @@ public:
     void savePortHistory(const QString &port);
     QStringList getPortHistory(); 
     void clearPortHistory();
+
+signals:
+    void screenshotShortcutChanged(const QString &shortcut);
 
 private:
     explicit Config(QObject *parent = nullptr);

@@ -512,6 +512,12 @@
              </widget>
             </item>
             <item>
+             <widget class="QKeySequenceEdit" name="shotShortcutEdit">
+              <property name="toolTip"><string>Screenshot shortcut (focus here and press the desired keys)</string></property>
+              <property name="accessibleName"><string>Screenshot shortcut</string></property>
+             </widget>
+            </item>
+            <item>
              <widget class="QSpinBox" name="shotQualitySpin">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">

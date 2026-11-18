@@ -523,7 +523,11 @@ void VideoForm::installShortcut()
     });
 
     // screenshot（adb 原生分辨率截图，复制到剪贴板并保存）
-    shortcut = new QShortcut(QKeySequence("Alt+S"), this);
+    auto &config = Config::getInstance();
+    shortcut = new QShortcut(QKeySequence::fromString(config.screenshotShortcut(), QKeySequence::PortableText), this);
+    connect(&config, &Config::screenshotShortcutChanged, shortcut, [shortcut](const QString &key) {
+        shortcut->setKey(QKeySequence::fromString(key, QKeySequence::PortableText));
+    });
     shortcut->setAutoRepeat(false);
     connect(shortcut, &QShortcut::activated, this, [this]() {
         auto device = qsc::IDeviceManage::getInstance().getDevice(m_serial);

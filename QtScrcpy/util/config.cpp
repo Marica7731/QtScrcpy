@@ -225,6 +225,20 @@ void Config::initializeConfig()
     }
 }
 
+QString Config::screenshotShortcut() const
+{
+    return m_userData->value(QStringLiteral("common/ScreenshotShortcut"), QStringLiteral("Ctrl+Shift+4")).toString();
+}
+
+void Config::setScreenshotShortcut(const QString &shortcut)
+{
+    if (shortcut == screenshotShortcut()) {
+        return;
+    }
+    m_userData->setValue(QStringLiteral("common/ScreenshotShortcut"), shortcut);
+    emit screenshotShortcutChanged(shortcut);
+}
+
 void Config::setUserBootConfig(const UserBootConfig &config)
 {
     m_userData->beginGroup(GROUP_COMMON);
